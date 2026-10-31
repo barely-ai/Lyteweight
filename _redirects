@@ -1,1 +1,2 @@
 / /app/ 302
+/p/:id /app/?library=:id 302

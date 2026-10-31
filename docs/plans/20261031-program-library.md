@@ -5,12 +5,12 @@
 - [x] 1 draft
 - [ ] 2 codex arch (skipped: codex is not installed in this cloud session)
 - [x] 3 approved (2026-10-31, all eight recommendations; lifter leaderboard added after approval)
-- [ ] 4 contract (written, waiting for approval)
-- [ ] 5 implement
-- [ ] 6 verify
-- [ ] 6b comment pass
-- [ ] 7 reviews (codex unavailable: a self-review against the same two prompts replaces it)
-- [ ] 8 triage
+- [x] 4 contract (approved 2026-10-31)
+- [x] 5 implement
+- [x] 6 verify (tsc, eslint, lint-views, 2,878 mocha tests, every screen driven in Chromium against `wrangler pages dev` with a local D1)
+- [x] 6b comment pass (done by hand: every added comment carries a decision or an outside constraint)
+- [x] 7 reviews (codex unavailable: self-review against the same two prompts)
+- [ ] 8 triage (findings listed under "Review findings", waiting for the user)
 - [ ] 9 documented
 
 ## What the user gets
@@ -20,7 +20,7 @@ Anyone using Lyteweight can publish one of their programs to a shared library. E
 The library has three rankings, shown as three tabs:
 
 - **Most run**: lifters × weeks. Each install that imported the program adds one point for every calendar week in which it finished at least one workout of that program. A program 10 people ran for 12 weeks scores 120, above one 50 people tried for 1 week (50).
-- **Top rated**: 1 to 5 stars. A device can rate a program after it finished 3 workouts of it. The tab sorts by a Bayesian average (the mean pulled towards the library-wide mean by 5 phantom votes), so one 5-star vote does not beat forty 4.8-star votes.
+- **Top rated**: 1 to 5 stars. A device can rate a program after it finished 3 workouts of it. The tab sorts by a Bayesian average: every program starts with 5 phantom votes of 3 stars, so one 5-star vote (3.33) ranks below eight 4-star votes (3.62). The first version pulled towards the library-wide mean, and a test showed one 5-star vote beating eight 4-star votes whenever most ratings were high.
 - **Coach picks**: coaches the owner approves can recommend a program with a short note. Recommended programs show a coach badge and the note.
 
 The library opens on **This week**, a weekly leaderboard. A program's weekly score is the number of installs that finished at least one of its workouts in that ISO week (Monday to Sunday, UTC). Ties break on the Top rated score. The top 10 render as infographic cards:
@@ -388,6 +388,22 @@ Views render and run effects. Each one's logic lives in the modules above.
 - `test/cardioLeaderboard.test.ts` (new)
 - `test/libraryRanking.test.ts` (new)
 - `test/libraryServer.test.ts` (new): publish, list, edit-key auth, admin delete, usage dedupe per week, rating gate at 3 workouts, report hiding at 3, comment filter, world-record rejection, 15% jump hold, rate limits.
+
+## Changes from the contract
+
+- Effects live in `src/models/libraryActions.ts` (`LibraryActions_*`), the same shape as `src/models/integrationsActions.ts`, instead of new thunks in `src/ducks/thunks.ts`. `Thunk_finishProgramDay` calls `LibraryActions_afterWorkout`, and `Thunk_importFromLink` sends library links to the program page.
+- Rules both sides need (ISO weeks, the text filter, weight classes, the lift cap, the 15% jump check) moved to `src/models/libraryRules.ts`, which imports only `dots.ts`, so the Pages Function bundle stays small.
+- The lift cap is a DOTS ceiling (650 total DOTS, then 45% / 36% / 45% of that for squat / bench / deadlift) instead of a world-record table. No record table was reachable from this session, and the ceiling sits above every real raw record.
+- Comments carry `authorId`, a SHA-256 of the install id, so a comment never reveals an install id that someone could reuse to post leaderboard numbers.
+- `src/models/leaderboardView.ts` maps the Leaderboard tab's filter choices to a board request.
+- The cardio and lift tests share `test/liftLeaderboard.test.ts`, and the rules and ranking tests share `test/programLibrary.test.ts`.
+- `library`, `libraryProgram` and `libraryPublish` are registered in the Home, Program, Me and Onboarding stacks, because `navigateTo` pushes onto the current tab's stack.
+
+## Review findings
+
+- **Cancelled import still counts as added.** `LibraryActions_add` records the library mapping even when the user cancels the "import program?" dialog. If that user already runs a program with the same id (a clone of the same built-in), its workouts then count as usage of the library program. Fix: `Thunk_importProgram` returns whether it imported, about 10 lines in 2 files. Recommendation: fix.
+- **Install ids are self-generated.** Someone with many networks can fake usage and ratings. The 20 new installs per network per day cap slows it. Accepted in the plan.
+- **The weekly board reads every program summary.** Fine up to about 1,000 programs. Past that, cache the response for 10 minutes with the Cache API, about 15 lines. Recommendation: wait.
 
 ## What we're not doing
 

@@ -12,7 +12,9 @@ import {
   Thunk_log,
   Thunk_fetchInitial,
   Thunk_debugTestLogin,
+  Thunk_pushScreen,
 } from "../ducks/thunks";
+import { ProgramLibrary_idFromLink } from "../models/programLibrary";
 import { Service } from "../api/service";
 import { NativeEffects_apply } from "../models/nativeEffects";
 import { ITimerBridge } from "../utils/timerBridge";
@@ -206,6 +208,13 @@ export function AppView(props: IProps): JSX.Element | null {
       );
     }
   };
+
+  useEffect(() => {
+    const libraryId = typeof window !== "undefined" ? ProgramLibrary_idFromLink(window.location.href) : undefined;
+    if (isNavReady && libraryId) {
+      dispatch(Thunk_pushScreen("libraryProgram", { libraryId }));
+    }
+  }, [isNavReady]);
 
   useEffect(() => {
     const url =

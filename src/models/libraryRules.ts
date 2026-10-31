@@ -91,6 +91,11 @@ export function LibraryRules_effortZone(effort: number): number {
   return Math.min(5, Math.max(1, Math.ceil(effort / 2)));
 }
 
+export function LibraryRules_weightClasses(sex: ILibrarySex): string[] {
+  const classes = weightClasses[sex];
+  return [...classes.map(String), `${classes[classes.length - 1]}+`];
+}
+
 export function LibraryRules_weightClass(bodyweightKg: number, sex: ILibrarySex): string {
   const classes = weightClasses[sex];
   const match = classes.find((limit) => bodyweightKg <= limit);

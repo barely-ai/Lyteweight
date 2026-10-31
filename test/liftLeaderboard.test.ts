@@ -1,8 +1,18 @@
 import "mocha";
 import { expect } from "chai";
 import { LiftLeaderboard_workoutBody } from "../src/models/liftLeaderboard";
-import { CardioLeaderboard_manualBody, CardioLeaderboard_whoopBodies, CardioLeaderboard_zoneMinutes } from "../src/models/cardioLeaderboard";
+import {
+  CardioLeaderboard_manualBody,
+  CardioLeaderboard_whoopBodies,
+  CardioLeaderboard_zoneMinutes,
+} from "../src/models/cardioLeaderboard";
 import { Weight_build, Weight_getOneRepMax } from "../src/models/weight";
+import {
+  LeaderboardView_board,
+  LeaderboardView_initial,
+  LeaderboardView_unit,
+  LeaderboardView_withSex,
+} from "../src/models/leaderboardView";
 import { IHistoryRecord, ISet, IWhoopWorkout } from "../src/types";
 
 function set(weight: number, reps: number, unit: "kg" | "lb" = "kg", isCompleted: boolean = true): ISet {
@@ -61,6 +71,31 @@ describe("LiftLeaderboard", () => {
 
   it("sends nothing for a workout with no completed sets", () => {
     expect(LiftLeaderboard_workoutBody(record([["squat", [set(100, 5, "kg", false)]]]), 70, "i")).to.equal(undefined);
+  });
+});
+
+describe("LeaderboardView", () => {
+  it("turns the tab's choices into a board request and a unit", () => {
+    const start = LeaderboardView_initial("female");
+    expect(LeaderboardView_board(start)).to.eql({
+      kind: "strength",
+      lift: "total",
+      sex: "female",
+      weightClass: undefined,
+    });
+    expect(LeaderboardView_unit(start)).to.equal("DOTS");
+    const classed = { ...start, weightClass: "63" };
+    expect(LeaderboardView_board(classed)).to.eql({
+      kind: "strength",
+      lift: "total",
+      sex: "female",
+      weightClass: "63",
+    });
+    expect(LeaderboardView_withSex(classed, "male").weightClass).to.equal("all");
+    expect(LeaderboardView_board({ ...start, resistance: "volume" })).to.eql({ kind: "volume", sex: "female" });
+    const cardio = { ...start, section: "cardio" as const, cardioSort: "kcalPerKg" as const };
+    expect(LeaderboardView_board(cardio)).to.eql({ kind: "cardio", sort: "kcalPerKg" });
+    expect(LeaderboardView_unit(cardio)).to.equal("kcal/kg");
   });
 });
 

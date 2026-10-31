@@ -1,6 +1,6 @@
 import { IHistoryRecord, ILibraryStorage, IProgram, ISettings } from "../types";
-import { Program_exportProgram } from "./program";
-import { ILibraryComment, ILibraryProgramSummary, ILibraryPublishBody } from "./libraryTypes";
+import { IExportedProgram, Program_exportProgram } from "./program";
+import { ILibraryComment, ILibraryProgramSummary, ILibraryPublishBody, ILibraryRankChange } from "./libraryTypes";
 import {
   LibraryRules_isoWeek,
   LibraryRules_limits,
@@ -23,9 +23,7 @@ export function ProgramLibrary_formProblems(form: ILibraryPublishForm): string[]
   const problems = LibraryRules_textProblems(form.name, limits.name).map((p) => `Name: ${p}`);
   problems.push(...LibraryRules_textProblems(form.author, limits.author).map((p) => `Your name: ${p}`));
   if (form.description.trim()) {
-    problems.push(
-      ...LibraryRules_textProblems(form.description, limits.description).map((p) => `Description: ${p}`)
-    );
+    problems.push(...LibraryRules_textProblems(form.description, limits.description).map((p) => `Description: ${p}`));
   }
   const tags = LibraryRules_normalizeTags(form.tags);
   if (tags.length > limits.tags) {
@@ -121,6 +119,76 @@ export function ProgramLibrary_idFromLink(link: string): string | undefined {
     trimmed.match(new RegExp(`/p/(${libraryIdPattern})(?:[/?#]|$)`)) ??
     trimmed.match(new RegExp(`[?&]library=(${libraryIdPattern})(?:&|#|$)`));
   return match?.[1];
+}
+
+export function ProgramLibrary_changeLabel(change: ILibraryRankChange): {
+  text: string;
+  tone: "up" | "down" | "flat" | "new";
+} {
+  switch (change.kind) {
+    case "up":
+      return { text: `▲${change.by}`, tone: "up" };
+    case "down":
+      return { text: `▼${change.by}`, tone: "down" };
+    case "new":
+      return { text: "NEW", tone: "new" };
+    case "same":
+      return { text: "–", tone: "flat" };
+  }
+}
+
+export function ProgramLibrary_starsLabel(summary: ILibraryProgramSummary): string {
+  if (summary.starsAverage == null || summary.starsCount === 0) {
+    return "No ratings yet";
+  }
+  return `★ ${summary.starsAverage.toFixed(1)} · ${summary.starsCount} ${summary.starsCount === 1 ? "rating" : "ratings"}`;
+}
+
+export interface ILibraryPreviewDay {
+  title: string;
+  exercises: string[];
+}
+
+const previewWeeks = 1;
+
+function exerciseNames(exerciseText: string): string[] {
+  const names: string[] = [];
+  let isInScript = false;
+  for (const raw of exerciseText.split("\n")) {
+    const line = raw.trim();
+    const opensScript = line.includes("{~");
+    const closesScript = line.includes("~}");
+    if (isInScript) {
+      isInScript = !closesScript;
+      continue;
+    }
+    isInScript = opensScript && !closesScript;
+    if (line === "" || line.startsWith("//") || line.startsWith("/") || /used:\s*none/.test(line)) {
+      continue;
+    }
+    const name = line
+      .split("/")[0]
+      .replace(/\[.*?\]/g, "")
+      .trim();
+    if (name && !names.includes(name)) {
+      names.push(name);
+    }
+  }
+  return names;
+}
+
+export function ProgramLibrary_previewDays(exported: IExportedProgram): {
+  weeksCount: number;
+  days: ILibraryPreviewDay[];
+} {
+  const weeks = exported.program.planner?.weeks ?? [];
+  const days = weeks.slice(0, previewWeeks).flatMap((week) =>
+    week.days.map((day) => ({
+      title: weeks.length > 1 ? `${week.name} · ${day.name}` : day.name,
+      exercises: exerciseNames(day.exerciseText),
+    }))
+  );
+  return { weeksCount: weeks.length, days };
 }
 
 export function ProgramLibrary_emptyStorage(): ILibraryStorage {

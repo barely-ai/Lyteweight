@@ -23,6 +23,9 @@ import { ScreenRecentImports as ScreenRecentImportsComponent } from "../../compo
 import { ScreenImportPreview as ScreenImportPreviewComponent } from "../../components/screenImportPreview";
 import { ScreenMeetPrep as ScreenMeetPrepComponent } from "../../components/screenMeetPrep";
 import { ScreenIntegrations as ScreenIntegrationsComponent } from "../../components/screenIntegrations";
+import { ScreenLibrary } from "../../components/screenLibrary";
+import { ScreenLibraryProgram } from "../../components/screenLibraryProgram";
+import { ScreenLibraryPublish } from "../../components/screenLibraryPublish";
 import { Program_getProgram } from "../../models/program";
 import { Exercise_find, Exercise_toKey } from "../../models/exercise";
 import { Equipment_getEquipmentOfGym } from "../../models/equipment";
@@ -382,6 +385,54 @@ export function NavScreenMeetPrep(): React.JSX.Element {
           history={untrack(state.storage.history)}
           stats={untrack(state.storage.stats)}
           settings={untrack(state.storage.settings)}
+        />
+      </NavScreenContent>
+    </View>
+  );
+}
+
+export function NavScreenLibrary(): React.JSX.Element {
+  const state = useTrackedState();
+  const dispatch = useTrackedDispatch();
+  return (
+    <View className="flex-1 bg-background-default">
+      <NavScreenContent>
+        <ScreenLibrary dispatch={dispatch} state={untrack(state)} library={state.storage.library} />
+      </NavScreenContent>
+    </View>
+  );
+}
+
+export function NavScreenLibraryProgram(): React.JSX.Element {
+  const state = useTrackedState();
+  const dispatch = useTrackedDispatch();
+  const route = useRoute<{ key: string; name: "libraryProgram"; params: { libraryId: string } }>();
+  return (
+    <View className="flex-1 bg-background-default">
+      <NavScreenContent>
+        <ScreenLibraryProgram
+          dispatch={dispatch}
+          state={untrack(state)}
+          library={state.storage.library}
+          libraryId={route.params.libraryId}
+        />
+      </NavScreenContent>
+    </View>
+  );
+}
+
+export function NavScreenLibraryPublish(): React.JSX.Element {
+  const state = useTrackedState();
+  const dispatch = useTrackedDispatch();
+  const route = useRoute<{ key: string; name: "libraryPublish"; params: { programId: string } }>();
+  return (
+    <View className="flex-1 bg-background-default">
+      <NavScreenContent>
+        <ScreenLibraryPublish
+          dispatch={dispatch}
+          state={untrack(state)}
+          library={state.storage.library}
+          programId={route.params.programId}
         />
       </NavScreenContent>
     </View>

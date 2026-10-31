@@ -1,6 +1,10 @@
 import "mocha";
 import { expect } from "chai";
+import { IExportedProgram } from "../src/models/program";
 import {
+  ProgramLibrary_previewDays,
+  ProgramLibrary_changeLabel,
+  ProgramLibrary_starsLabel,
   ProgramLibrary_emptyStorage,
   ProgramLibrary_filter,
   ProgramLibrary_formProblems,
@@ -128,6 +132,45 @@ describe("ProgramLibrary", () => {
       createdAt: 0,
     });
     expect(ProgramLibrary_visibleComments([comment("a"), comment("b")], ["a"]).map((c) => c.id)).to.eql(["b"]);
+  });
+
+  it("previews the first week as exercise names, skipping comments, templates and scripts", () => {
+    const day1 = [
+      "// note",
+      "main / used: none / 2x5 \\",
+      "/ progress: custom(increase: 2.5lb) {~",
+      "  weights += state.increase",
+      "~}",
+      "Squat[1-4] / ...main / 100kg / progress: custom(increase: 5lb) { ...main }",
+      "",
+      "Bench Press / 3x8",
+      "Squat / 1x1",
+    ].join("\n");
+    const exported = {
+      program: {
+        planner: {
+          vtype: "planner",
+          name: "P",
+          weeks: [
+            { name: "Week 1", days: [{ name: "Day 1", exerciseText: day1 }] },
+            { name: "Week 2", days: [{ name: "Day 1", exerciseText: "Squat / 3x3" }] },
+          ],
+        },
+      },
+    } as unknown as IExportedProgram;
+    expect(ProgramLibrary_previewDays(exported)).to.eql({
+      weeksCount: 2,
+      days: [{ title: "Week 1 · Day 1", exercises: ["Squat", "Bench Press"] }],
+    });
+  });
+
+  it("labels rank changes and ratings", () => {
+    expect(ProgramLibrary_changeLabel({ kind: "up", by: 2 })).to.eql({ text: "▲2", tone: "up" });
+    expect(ProgramLibrary_changeLabel({ kind: "new" }).text).to.equal("NEW");
+    expect(ProgramLibrary_starsLabel(summary("A", []))).to.equal("No ratings yet");
+    expect(ProgramLibrary_starsLabel({ ...summary("A", []), starsAverage: 4.75, starsCount: 1 })).to.equal(
+      "★ 4.8 · 1 rating"
+    );
   });
 
   it("builds and reads short links", () => {

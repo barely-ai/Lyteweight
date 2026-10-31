@@ -221,15 +221,26 @@ class LibraryStore {
   }
 
   public async all<T>(sql: string, ...values: unknown[]): Promise<T[]> {
-    return (await this.db.prepare(sql).bind(...values).all<T>()).results;
+    return (
+      await this.db
+        .prepare(sql)
+        .bind(...values)
+        .all<T>()
+    ).results;
   }
 
   public first<T>(sql: string, ...values: unknown[]): Promise<T | null> {
-    return this.db.prepare(sql).bind(...values).first<T>();
+    return this.db
+      .prepare(sql)
+      .bind(...values)
+      .first<T>();
   }
 
   public async run(sql: string, ...values: unknown[]): Promise<void> {
-    await this.db.prepare(sql).bind(...values).run();
+    await this.db
+      .prepare(sql)
+      .bind(...values)
+      .run();
   }
 
   public async withinLimit(bucket: string, max: number): Promise<boolean> {
@@ -297,9 +308,7 @@ async function summaries(store: LibraryStore, now: number, id?: string): Promise
     liftersThisMonth: row.lifters_month,
     starsAverage: row.stars_count > 0 ? Math.round((row.stars_sum / row.stars_count) * 10) / 10 : undefined,
     starsCount: row.stars_count,
-    coachPicks: picks
-      .filter((p) => p.program_id === row.id)
-      .map((p) => ({ coachName: p.coach_name, note: p.note })),
+    coachPicks: picks.filter((p) => p.program_id === row.id).map((p) => ({ coachName: p.coach_name, note: p.note })),
   }));
 }
 
@@ -479,10 +488,7 @@ async function deleteProgram(store: LibraryStore, id: string): Promise<Response>
   for (const table of ["usage_weeks", "ratings", "program_reports", "recommendations", "program_adds"]) {
     await store.run(`DELETE FROM ${table} WHERE program_id = ?`, id);
   }
-  await store.run(
-    "DELETE FROM comment_reports WHERE comment_id IN (SELECT id FROM comments WHERE program_id = ?)",
-    id
-  );
+  await store.run("DELETE FROM comment_reports WHERE comment_id IN (SELECT id FROM comments WHERE program_id = ?)", id);
   await store.run("DELETE FROM comments WHERE program_id = ?", id);
   await store.run("DELETE FROM programs WHERE id = ?", id);
   return json({ ok: true });
@@ -929,7 +935,10 @@ async function approveLifts(store: LibraryStore, lifterId: string): Promise<Resp
 
 async function route(request: Request, env: ILibraryEnv, store: LibraryStore, now: number): Promise<Response> {
   const url = new URL(request.url);
-  const parts = url.pathname.replace(/^\/library\/?/, "").split("/").filter(Boolean);
+  const parts = url.pathname
+    .replace(/^\/library\/?/, "")
+    .split("/")
+    .filter(Boolean);
   const method = request.method;
   const [section, id, action] = parts;
   const admin = isAdmin(env, request);

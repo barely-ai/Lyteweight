@@ -57,6 +57,9 @@ import {
   NavScreenRecentImports,
   NavScreenMeetPrep,
   NavScreenIntegrations,
+  NavScreenLibrary,
+  NavScreenLibraryProgram,
+  NavScreenLibraryPublish,
   NavScreenImportPreview,
 } from "./screens/NavScreenMe";
 import { Footer2Wrapper } from "./screens/NavScreenFooter2";
@@ -239,6 +242,16 @@ function OnboardingStackScreen(): JSX.Element {
         component={NavScreenOnerms}
         options={{ headerShown: true, header: NavHeader }}
       />
+      <OnboardingStack.Screen
+        name="library"
+        component={NavScreenLibrary}
+        options={{ headerShown: true, header: NavHeader }}
+      />
+      <OnboardingStack.Screen
+        name="libraryProgram"
+        component={NavScreenLibraryProgram}
+        options={{ headerShown: true, header: NavHeader }}
+      />
     </OnboardingStack.Navigator>
   );
 }
@@ -258,6 +271,16 @@ function HomeStackScreen(): JSX.Element {
         component={NavScreenExerciseStats}
         options={{ headerShown: true, header: NavHeader }}
       />
+      <HomeStack.Screen
+        name="library"
+        component={NavScreenLibrary}
+        options={{ headerShown: true, header: NavHeader }}
+      />
+      <HomeStack.Screen
+        name="libraryProgram"
+        component={NavScreenLibraryProgram}
+        options={{ headerShown: true, header: NavHeader }}
+      />
     </HomeStack.Navigator>
   );
 }
@@ -271,6 +294,9 @@ function ProgramStackScreen(): JSX.Element {
       <ProgramStack.Screen name="programselect" component={NavScreenProgramSelect} />
       <ProgramStack.Screen name="programPreview" component={NavScreenProgramPreview} />
       <ProgramStack.Screen name="exerciseStats" component={NavScreenExerciseStats} />
+      <ProgramStack.Screen name="library" component={NavScreenLibrary} />
+      <ProgramStack.Screen name="libraryProgram" component={NavScreenLibraryProgram} />
+      <ProgramStack.Screen name="libraryPublish" component={NavScreenLibraryPublish} />
     </ProgramStack.Navigator>
   );
 }
@@ -342,6 +368,9 @@ function MeStackScreen(): JSX.Element {
       <MeStack.Screen name="recentImports" component={NavScreenRecentImports} />
       <MeStack.Screen name="meetPrep" component={NavScreenMeetPrep} />
       <MeStack.Screen name="integrations" component={NavScreenIntegrations} />
+      <MeStack.Screen name="library" component={NavScreenLibrary} />
+      <MeStack.Screen name="libraryProgram" component={NavScreenLibraryProgram} />
+      <MeStack.Screen name="libraryPublish" component={NavScreenLibraryPublish} />
       <MeStack.Screen name="importPreview" component={NavScreenImportPreview} />
       <MeStack.Screen name="programs" component={NavScreenPrograms} />
       <MeStack.Screen name="progress" component={NavScreenProgress} getId={({ params }) => String(params?.id ?? 0)} />

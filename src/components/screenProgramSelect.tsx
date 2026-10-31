@@ -45,6 +45,13 @@ export function ScreenProgramSelect(props: IScreenProgramSelectProps): JSX.Eleme
       onClick: () => props.dispatch(Thunk_pushScreen("programs")),
     },
     {
+      key: "community",
+      icon: <IconDoc width={24} height={24} />,
+      title: "Browse community programs",
+      description: "Programs other lifters shared, ranked by use, ratings and coach picks",
+      onClick: () => props.dispatch(Thunk_pushScreen("library")),
+    },
+    {
       key: "create",
       icon: <IconEditSquare />,
       title: "Create a program",

@@ -42,6 +42,9 @@ export type IScreenData =
   | { name: "recentImports"; params?: Record<string, never> }
   | { name: "meetPrep"; params?: Record<string, never> }
   | { name: "integrations"; params?: Record<string, never> }
+  | { name: "library"; params?: Record<string, never> }
+  | { name: "libraryProgram"; params: { libraryId: string } }
+  | { name: "libraryPublish"; params: { programId: string } }
   | { name: "importPreview"; params?: Record<string, never> };
 
 export type IScreen = IScreenData["name"];
@@ -182,6 +185,11 @@ export function Screen_tab(screen: IScreen): ITab {
       return "me";
     }
     case "integrations": {
+      return "me";
+    }
+    case "library":
+    case "libraryProgram":
+    case "libraryPublish": {
       return "me";
     }
     case "importPreview": {

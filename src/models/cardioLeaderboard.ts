@@ -1,5 +1,10 @@
 import { IWhoopWorkout } from "../types";
-import { LibraryRules_effortZone, LibraryRules_isoWeek, LibraryRules_limits, LibraryRules_textProblems } from "./libraryRules";
+import {
+  LibraryRules_effortZone,
+  LibraryRules_isoWeek,
+  LibraryRules_limits,
+  LibraryRules_textProblems,
+} from "./libraryRules";
 import { ICardioSessionBody } from "./libraryTypes";
 
 const kjPerKcal = 4.184;

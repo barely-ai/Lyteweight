@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import "mocha";
 import { expect } from "chai";
 import { ILibraryEnv, LibraryServer_handle } from "../cloudflare/libraryServer";
@@ -88,8 +89,12 @@ describe("LibraryServer", () => {
 
   it("lets only the edit key or the admin key change or delete a program", async () => {
     const { id, editKey } = await publish("Mine");
-    expect((await call("PUT", `programs/${id}`, publishBody("Hacked"), { "x-edit-key": "wrong" })).status).to.equal(403);
-    expect((await call("PUT", `programs/${id}`, publishBody("Mine v2"), { "x-edit-key": editKey })).status).to.equal(200);
+    expect((await call("PUT", `programs/${id}`, publishBody("Hacked"), { "x-edit-key": "wrong" })).status).to.equal(
+      403
+    );
+    expect((await call("PUT", `programs/${id}`, publishBody("Mine v2"), { "x-edit-key": editKey })).status).to.equal(
+      200
+    );
     expect((await call("GET", `programs/${id}`)).data.summary.name).to.equal("Mine v2");
     expect((await call("DELETE", `programs/${id}`, undefined, { "x-admin-key": adminKey })).status).to.equal(200);
     expect((await call("GET", `programs/${id}`)).status).to.equal(404);
@@ -197,7 +202,12 @@ describe("LibraryServer", () => {
 
   it("creates coaches only with the admin key, and shows their picks and badge", async () => {
     expect((await call("POST", "admin/coaches", { name: "Coach A", bio: "IPF coach" })).status).to.equal(403);
-    const coach = await call("POST", "admin/coaches", { name: "Coach A", bio: "IPF coach" }, { "x-admin-key": adminKey });
+    const coach = await call(
+      "POST",
+      "admin/coaches",
+      { name: "Coach A", bio: "IPF coach" },
+      { "x-admin-key": adminKey }
+    );
     const { id } = await publish("A");
     await call("POST", `programs/${id}/recommend`, { coachKey: coach.data.coachKey, note: "Solid peaking block" });
     const coaches = await call("GET", "coaches");
@@ -270,7 +280,13 @@ describe("LibraryServer", () => {
     });
 
     it("ranks cardio by zone-minutes, caps manual entries per day, and needs a joined lifter", async () => {
-      const session = (n: number, sessionId: string, zoneMinutes: number, source: string, kcal?: number) =>
+      const session = (
+        n: number,
+        sessionId: string,
+        zoneMinutes: number,
+        source: string,
+        kcal?: number
+      ): Promise<{ status: number; data: any }> =>
         call("POST", "leaderboard/cardio", {
           installId: install(n),
           sessionId,

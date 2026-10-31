@@ -23,6 +23,9 @@ import { ScreenRecentImports as ScreenRecentImportsComponent } from "../../compo
 import { ScreenImportPreview as ScreenImportPreviewComponent } from "../../components/screenImportPreview";
 import { ScreenMeetPrep as ScreenMeetPrepComponent } from "../../components/screenMeetPrep";
 import { ScreenIntegrations as ScreenIntegrationsComponent } from "../../components/screenIntegrations";
+import { ScreenLibrary } from "../../components/screenLibrary";
+import { ScreenLibraryProgram } from "../../components/screenLibraryProgram";
+import { ScreenLibraryPublish } from "../../components/screenLibraryPublish";
 import { Program_getProgram } from "../../models/program";
 import { Exercise_find, Exercise_toKey } from "../../models/exercise";
 import { Equipment_getEquipmentOfGym } from "../../models/equipment";
@@ -315,6 +318,45 @@ export function NavScreenMeetPrep(): JSX.Element {
         history={state.storage.history}
         stats={state.storage.stats}
         settings={state.storage.settings}
+      />
+    </NavScreenContent>
+  );
+}
+
+export function NavScreenLibrary(): JSX.Element {
+  const { state, dispatch } = useAppState();
+  return (
+    <NavScreenContent>
+      <ScreenLibrary dispatch={dispatch} state={state} library={state.storage.library} />
+    </NavScreenContent>
+  );
+}
+
+export function NavScreenLibraryProgram(): JSX.Element {
+  const { state, dispatch } = useAppState();
+  const route = useRoute<{ key: string; name: "libraryProgram"; params: { libraryId: string } }>();
+  return (
+    <NavScreenContent>
+      <ScreenLibraryProgram
+        dispatch={dispatch}
+        state={state}
+        library={state.storage.library}
+        libraryId={route.params.libraryId}
+      />
+    </NavScreenContent>
+  );
+}
+
+export function NavScreenLibraryPublish(): JSX.Element {
+  const { state, dispatch } = useAppState();
+  const route = useRoute<{ key: string; name: "libraryPublish"; params: { programId: string } }>();
+  return (
+    <NavScreenContent>
+      <ScreenLibraryPublish
+        dispatch={dispatch}
+        state={state}
+        library={state.storage.library}
+        programId={route.params.programId}
       />
     </NavScreenContent>
   );

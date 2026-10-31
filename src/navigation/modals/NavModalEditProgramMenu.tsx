@@ -3,7 +3,7 @@ import { useRoute, useNavigation } from "@react-navigation/native";
 import { useAppState } from "../StateContext";
 import { BottomSheetEditProgramV2Content } from "../../components/bottomSheetEditProgramV2";
 import { Program_getProgram } from "../../models/program";
-import { Thunk_generateAndCopyLink, Thunk_fetchRevisions } from "../../ducks/thunks";
+import { Thunk_generateAndCopyLink, Thunk_fetchRevisions, Thunk_pushScreen } from "../../ducks/thunks";
 import { UrlUtils_build } from "../../utils/url";
 import { ClipboardUtils_copy } from "../../utils/clipboard";
 import { navigateToModal } from "../navigationService";
@@ -54,6 +54,10 @@ export function NavModalEditProgramMenu(): JSX.Element {
       onGenerateProgramImage={() => {
         onClose();
         navigateToModal("programImageExportModal", { programId });
+      }}
+      onPublishToLibrary={() => {
+        onClose();
+        dispatch(Thunk_pushScreen("libraryPublish", { programId }));
       }}
       onLoadRevisions={() => {
         dispatch(

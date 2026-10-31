@@ -1,4 +1,6 @@
 import { Lyteweight_isLocalOnly } from "../utils/lyteweight";
+import { LibraryActions_afterWorkout } from "../models/libraryActions";
+import { ProgramLibrary_idFromLink } from "../models/programLibrary";
 import { IThunk, IDispatch } from "./types";
 import type { NavigationAction } from "@react-navigation/native";
 import { IScreen, IScreenData, IScreenParams } from "../models/screen";
@@ -578,7 +580,10 @@ async function switchToSyncAccount(
     hasLocalCopy: localStorageResult?.success === true && localStorageResult.data.tempUserId === mismatch.userId,
   });
   if (plan === "load-local" && localCopy != null) {
-    const newState = await getInitialState(env.service.client, { localStorage: localCopy, deviceId: getState().deviceId });
+    const newState = await getInitialState(env.service.client, {
+      localStorage: localCopy,
+      deviceId: getState().deviceId,
+    });
     newState.user = { id: mismatch.userId, email: mismatch.email };
     dispatch({ type: "ReplaceState", state: newState });
     dispatch(Thunk_fetchInitial());
@@ -1430,6 +1435,8 @@ export function Thunk_pushScreen<T extends IScreen>(
       "equipmentDetail",
       "hearaboutus",
       "programselect",
+      "library",
+      "libraryProgram",
     ];
     if (getState().storage.currentProgramId == null && screensWithoutCurrentProgram.indexOf(screen) === -1) {
       screen = "programs" as T;
@@ -1640,6 +1647,9 @@ export function Thunk_finishProgramDay(args: {
       goBack();
     }
     dispatch({ type: "FinishProgramDayAction", id, startTime, healthSync });
+    if (isCurrent) {
+      LibraryActions_afterWorkout(dispatch, getState(), progress).catch(() => undefined);
+    }
   };
 }
 
@@ -1924,6 +1934,11 @@ export function Thunk_applyImport(
 export function Thunk_importFromLink(link: string): IThunk {
   return async (dispatch, getState, env) => {
     dispatch(Thunk_postevent("import-from-link"));
+    const libraryId = ProgramLibrary_idFromLink(link);
+    if (libraryId) {
+      dispatch(Thunk_pushScreen("libraryProgram", { libraryId }));
+      return;
+    }
     const data = await ImportFromLink_importFromLink(link, env.service.client);
     if (data.success) {
       if (data.data.source) {

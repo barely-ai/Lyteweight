@@ -15,6 +15,7 @@ interface IProps {
   onExportProgramToLink: () => void;
   onShareProgramToLink: () => void;
   onGenerateProgramImage: () => void;
+  onPublishToLibrary: () => void;
   onLoadRevisions: () => void;
   onClose: () => void;
 }
@@ -53,6 +54,13 @@ export function BottomSheetEditProgramV2Content(props: IBottomSheetEditProgramV2
         icon={<IconPicture />}
         description="To share it with somebody."
         onClick={props.onGenerateProgramImage}
+      />
+      <BottomSheetItem
+        name="publish-to-library"
+        title="Publish to Community"
+        icon={<IconDoc2 />}
+        description="Let other lifters find, add, rate and comment on it."
+        onClick={props.onPublishToLibrary}
       />
       {props.isLoggedIn && (
         <>

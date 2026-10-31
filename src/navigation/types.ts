@@ -7,6 +7,8 @@ export type IHomeStackParamList = {
   main: { historyRecordId?: number } | undefined;
   progress: { id?: number } | undefined;
   exerciseStats: undefined;
+  library: undefined;
+  libraryProgram: { libraryId: string };
 };
 
 export type IOnboardingStackParamList = {
@@ -20,6 +22,8 @@ export type IOnboardingStackParamList = {
   programs: undefined;
   programPreview: undefined;
   onerms: undefined;
+  library: undefined;
+  libraryProgram: { libraryId: string };
 };
 
 export type IProgramStackParamList = {
@@ -29,6 +33,9 @@ export type IProgramStackParamList = {
   programselect: undefined;
   programPreview: undefined;
   exerciseStats: undefined;
+  library: undefined;
+  libraryProgram: { libraryId: string };
+  libraryPublish: { programId: string };
 };
 
 export type IWorkoutStackParamList = {
@@ -62,6 +69,9 @@ export type IMeStackParamList = {
   recentImports: undefined;
   meetPrep: undefined;
   integrations: undefined;
+  library: undefined;
+  libraryProgram: { libraryId: string };
+  libraryPublish: { programId: string };
   importPreview: undefined;
   programs: undefined;
   programPreview: undefined;
