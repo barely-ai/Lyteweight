@@ -2025,6 +2025,29 @@ const _VMeetProfileMatches: IEquals<v.InferOutput<typeof _VMeetProfile>, IMeetPr
 void _VMeetProfileMatches;
 export const VMeetProfile: v.GenericSchema<IMeetProfile> = _VMeetProfile;
 
+export interface ILibraryStorage {
+  publications: { programId: string; libraryId: string; editKey: string }[];
+  imports: { programId: string; libraryId: string }[];
+  usageConsent?: boolean;
+  hiddenAuthorIds: string[];
+  displayName?: string;
+  coachKey?: string;
+  leaderboard?: { sex: "male" | "female" };
+  sentWhoopWorkoutIds: string[];
+}
+const _VLibraryStorage = v.object({
+  publications: v.array(v.object({ programId: v.string(), libraryId: v.string(), editKey: v.string() })),
+  imports: v.array(v.object({ programId: v.string(), libraryId: v.string() })),
+  usageConsent: v.optional(v.boolean()),
+  hiddenAuthorIds: v.array(v.string()),
+  displayName: v.optional(v.string()),
+  coachKey: v.optional(v.string()),
+  leaderboard: v.optional(v.object({ sex: v.picklist(["male", "female"]) })),
+  sentWhoopWorkoutIds: v.array(v.string()),
+});
+const _VLibraryStorageMatches: IEquals<v.InferOutput<typeof _VLibraryStorage>, ILibraryStorage> = true;
+void _VLibraryStorageMatches;
+
 export interface IWhoopDay {
   date: string;
   cycleId: number;
@@ -2158,6 +2181,7 @@ interface IStorageRaw {
   signupRequests: number[];
   hearAboutUs?: IHearAboutUs;
   meetProfile?: IMeetProfile;
+  library?: ILibraryStorage;
   integrations?: IIntegrations;
   helps: string[];
   tempUserId: string;
@@ -2192,6 +2216,7 @@ const _VStorage = v.object({
   signupRequests: v.array(v.number()),
   hearAboutUs: v.optional(_VHearAboutUs),
   meetProfile: v.optional(_VMeetProfile),
+  library: v.optional(_VLibraryStorage),
   integrations: v.optional(_VIntegrations),
   helps: v.array(v.string()),
   tempUserId: v.string(),
