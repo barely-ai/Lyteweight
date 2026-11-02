@@ -10,6 +10,7 @@ import { IVersions } from "../models/versionTracker";
 import { Settings_build } from "../models/settings";
 import { Progress_getEntryId } from "../models/progress";
 import { EquipmentUnits_attachSetups } from "../models/equipmentUnits";
+import { WhoopData_withoutEmptyFields } from "../models/whoopData";
 
 let latestMigrationVersion: number | undefined;
 export function getLatestMigrationVersion(): string {
@@ -477,6 +478,15 @@ export const migrations = {
   "20261018120000_attach_equipment_setups": (aStorage: IStorage): IStorage => {
     const storage: IStorage = JSON.parse(JSON.stringify(aStorage));
     storage.settings.gyms = EquipmentUnits_attachSetups(storage.settings.gyms || [], storage.settings.units);
+    return storage;
+  },
+  "20261102120000_drop_null_whoop_fields": (aStorage: IStorage): IStorage => {
+    const storage: IStorage = JSON.parse(JSON.stringify(aStorage));
+    const integrations = storage.integrations;
+    if (integrations != null) {
+      integrations.whoopDays = (integrations.whoopDays || []).map(WhoopData_withoutEmptyFields);
+      integrations.whoopWorkouts = (integrations.whoopWorkouts || []).map(WhoopData_withoutEmptyFields);
+    }
     return storage;
   },
 };

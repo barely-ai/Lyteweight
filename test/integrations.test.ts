@@ -12,6 +12,8 @@ import { IntegrationsSummary_recoveryColor, IntegrationsSummary_bodyRows } from 
 import { IIntegrationsEnv, IKv, IntegrationsServer_handle } from "../cloudflare/integrationsServer";
 import { Stats_getEmpty } from "../src/models/stats";
 import { Weight_build } from "../src/models/weight";
+import { migrations } from "../src/migrations/migrations";
+import { IStorage } from "../src/types";
 
 const hour = 60 * 60 * 1000;
 
@@ -149,6 +151,29 @@ describe("WhoopData", () => {
     expect(w.sport).to.equal("powerlifting");
     expect(w.end - w.start).to.equal(1.5 * hour);
     expect(w.zoneMinutes).to.eql([0, 10, 20, 0, 0, 0]);
+  });
+
+  it("leaves out fields WHOOP sends as null, because storage validation rejects them", () => {
+    const workout = {
+      ...whoopFixture.workouts[0],
+      score: { ...whoopFixture.workouts[0].score, distance_meter: null as unknown as number },
+    };
+    const [w] = WhoopData_toWorkouts([workout]);
+    expect(w).to.not.have.property("distanceM");
+  });
+
+  it("removes null WHOOP fields already saved on the phone", () => {
+    const whoopWorkouts = [{ id: "a", start: 1, end: 2, distanceM: null as unknown as number }];
+    const whoopDays = [{ date: "2026-11-01", cycleId: 1, spo2: null as unknown as number }];
+    const storage = { integrations: { whoopDays, whoopWorkouts, bodyComposition: [] } } as unknown as IStorage;
+    const migrated = migrations["20261102120000_drop_null_whoop_fields"](storage);
+    expect(migrated.integrations?.whoopWorkouts).to.eql([{ id: "a", start: 1, end: 2 }]);
+    expect(migrated.integrations?.whoopDays).to.eql([{ date: "2026-11-01", cycleId: 1 }]);
+  });
+
+  it("leaves storage without integrations alone", () => {
+    const storage = { version: "1" } as unknown as IStorage;
+    expect(migrations["20261102120000_drop_null_whoop_fields"](storage)).to.eql(storage);
   });
 });
 

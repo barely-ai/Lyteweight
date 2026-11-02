@@ -122,8 +122,9 @@ function sleepFields(sleep: IWhoopApiSleep | undefined): Partial<IWhoopDay> {
   };
 }
 
-function withoutUndefined<T extends object>(obj: T): T {
-  return Object.fromEntries(Object.entries(obj).filter(([, value]) => value !== undefined)) as T;
+// WHOOP sends null for values it has no reading for, and VStorage rejects null, which blocks the app at startup.
+export function WhoopData_withoutEmptyFields<T extends object>(obj: T): T {
+  return Object.fromEntries(Object.entries(obj).filter(([, value]) => value != null)) as T;
 }
 
 /** One entry per WHOOP cycle (a "day" from one sleep to the next), dated by the morning the main sleep ended. */
@@ -138,7 +139,7 @@ export function WhoopData_toDays(data: IWhoopApiData): IWhoopDay[] {
     const sleep =
       (recovery?.sleep_id != null ? sleepsById.get(recovery.sleep_id) : undefined) ?? mainSleepByCycle.get(cycle.id);
     const score = recovery?.score;
-    return withoutUndefined<IWhoopDay>({
+    return WhoopData_withoutEmptyFields<IWhoopDay>({
       date: localDate(sleep?.end ?? cycle.start),
       cycleId: cycle.id,
       recoveryScore: score?.recovery_score,
@@ -159,7 +160,7 @@ export function WhoopData_toWorkouts(workouts: IWhoopApiWorkout[]): IWhoopWorkou
   return workouts.map((w) => {
     const zones = w.score?.zone_durations;
     const zoneKeys = ["zero_milli", "one_milli", "two_milli", "three_milli", "four_milli", "five_milli"];
-    return withoutUndefined<IWhoopWorkout>({
+    return WhoopData_withoutEmptyFields<IWhoopWorkout>({
       id: w.id,
       start: new Date(w.start).getTime(),
       end: new Date(w.end).getTime(),
