@@ -1,5 +1,9 @@
 import "mocha";
 import { expect } from "chai";
+import * as fs from "fs";
+import * as path from "path";
+import matter from "gray-matter";
+import { PlannerTestUtils_get } from "./utils/plannerTestUtils";
 import { IExportedProgram } from "../src/models/program";
 import {
   ProgramLibrary_previewDays,
@@ -138,8 +142,14 @@ describe("ProgramLibrary", () => {
     const day1 = [
       "// note",
       "main / used: none / 2x5 \\",
-      "/ progress: custom(increase: 2.5lb) {~",
-      "  weights += state.increase",
+      "/ update: custom() {~",
+      "  if (setIndex == 1) {",
+      "    weights[2] = completedWeights[1]",
+      "  }",
+      "~} / progress: custom(increase: 2.5lb) {~",
+      "  if (completedRPE[1] > 0) {",
+      "    weights += state.increase",
+      "  }",
       "~}",
       "Squat[1-4] / ...main / 100kg / progress: custom(increase: 5lb) { ...main }",
       "",
@@ -162,6 +172,22 @@ describe("ProgramLibrary", () => {
       weeksCount: 2,
       days: [{ title: "Week 1 · Day 1", exercises: ["Squat", "Bench Press"] }],
     });
+  });
+
+  it("previews the meet prep program, whose template has two scripts, as exercise names only", () => {
+    const file = path.resolve(__dirname, "../programs/builtin/lyteweight-meet-prep.md");
+    const text = matter(fs.readFileSync(file, "utf8")).content.match(/```liftoscript\n([\s\S]*?)```/)![1];
+    const { program } = PlannerTestUtils_get(text);
+    const preview = ProgramLibrary_previewDays({ program } as unknown as IExportedProgram);
+    const names = preview.days.flatMap((d) => d.exercises);
+    expect(preview.days[0].exercises).to.eql([
+      "Squat",
+      "Bench Press",
+      "Bent Over Row",
+      "Back Extension",
+      "Hanging Leg Raise",
+    ]);
+    expect(names.filter((n) => /[(){}=~]|^if\b|^var\b/.test(n))).to.eql([]);
   });
 
   it("labels rank changes and ratings", () => {

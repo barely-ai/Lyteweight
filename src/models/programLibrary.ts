@@ -156,14 +156,20 @@ function exerciseNames(exerciseText: string): string[] {
   let isInScript = false;
   for (const raw of exerciseText.split("\n")) {
     const line = raw.trim();
-    const opensScript = line.includes("{~");
-    const closesScript = line.includes("~}");
-    if (isInScript) {
-      isInScript = !closesScript;
-      continue;
+    const wasInScript = isInScript;
+    const lastOpen = line.lastIndexOf("{~");
+    const lastClose = line.lastIndexOf("~}");
+    if (lastOpen !== -1 || lastClose !== -1) {
+      isInScript = lastOpen > lastClose;
     }
-    isInScript = opensScript && !closesScript;
-    if (line === "" || line.startsWith("//") || line.startsWith("/") || /used:\s*none/.test(line)) {
+    if (
+      wasInScript ||
+      line === "" ||
+      line.startsWith("//") ||
+      line.startsWith("/") ||
+      line.startsWith("~}") ||
+      /used:\s*none/.test(line)
+    ) {
       continue;
     }
     const name = line

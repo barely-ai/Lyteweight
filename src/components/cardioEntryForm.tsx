@@ -1,7 +1,7 @@
 import { JSX, useState } from "react";
 import { View } from "react-native";
 import { Text } from "./primitives/text";
-import { TextInput } from "./primitives/textInput";
+import { LibraryTextInput } from "./libraryTextInput";
 import { Button } from "./button";
 import { LibraryChips } from "./libraryChips";
 
@@ -25,8 +25,7 @@ export function CardioEntryForm(props: IProps): JSX.Element {
     <View className="p-3 mb-3 border rounded-xl border-border-neutral">
       <Text className="mb-2 text-sm font-bold">Add cardio by hand ✏️</Text>
       <View className="flex-row gap-2 mb-3">
-        <TextInput
-          className="px-3 py-2 border rounded-lg border-border-neutral bg-background-default"
+        <LibraryTextInput
           style={{ flex: 1, minWidth: 0 }}
           placeholder="Activity, e.g. Run"
           value={activity}
@@ -34,8 +33,7 @@ export function CardioEntryForm(props: IProps): JSX.Element {
           maxLength={40}
           testID="cardio-activity"
         />
-        <TextInput
-          className="px-3 py-2 border rounded-lg border-border-neutral bg-background-default"
+        <LibraryTextInput
           style={{ width: 96, flexShrink: 0 }}
           placeholder="Minutes"
           value={minutes}

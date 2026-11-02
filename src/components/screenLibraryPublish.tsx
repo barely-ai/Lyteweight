@@ -1,7 +1,7 @@
 import { JSX, useState } from "react";
 import { Pressable, View } from "react-native";
 import { Text } from "./primitives/text";
-import { TextInput } from "./primitives/textInput";
+import { LibraryTextInput } from "./libraryTextInput";
 import { Button } from "./button";
 import { LinkButton } from "./linkButton";
 import { useNavOptions } from "../navigation/useNavOptions";
@@ -18,8 +18,6 @@ interface IProps {
   library?: ILibraryStorage;
   programId: string;
 }
-
-const inputCn = "px-3 py-2 mb-3 border rounded-lg border-border-neutral bg-background-default";
 
 export function ScreenLibraryPublish(props: IProps): JSX.Element {
   useNavOptions({ navTitle: "Publish to Community" });
@@ -46,12 +44,18 @@ export function ScreenLibraryPublish(props: IProps): JSX.Element {
           : "Everyone using Lyteweight can find, add, rate and comment on published programs."}
       </Text>
       <Text className="mb-1 text-xs font-bold">Program name</Text>
-      <TextInput className={inputCn} value={name} onChangeText={setName} maxLength={80} testID="publish-name" />
+      <LibraryTextInput className="mb-3" value={name} onChangeText={setName} maxLength={80} testID="publish-name" />
       <Text className="mb-1 text-xs font-bold">Your name, as shown to others</Text>
-      <TextInput className={inputCn} value={author} onChangeText={setAuthor} maxLength={40} testID="publish-author" />
+      <LibraryTextInput
+        className="mb-3"
+        value={author}
+        onChangeText={setAuthor}
+        maxLength={40}
+        testID="publish-author"
+      />
       <Text className="mb-1 text-xs font-bold">Description</Text>
-      <TextInput
-        className={inputCn}
+      <LibraryTextInput
+        className="mb-3"
         value={description}
         onChangeText={setDescription}
         multiline={true}
@@ -61,8 +65,8 @@ export function ScreenLibraryPublish(props: IProps): JSX.Element {
         testID="publish-description"
       />
       <Text className="mb-1 text-xs font-bold">Tags, separated by commas (up to 5)</Text>
-      <TextInput
-        className={inputCn}
+      <LibraryTextInput
+        className="mb-3"
         value={tags}
         onChangeText={setTags}
         placeholder="powerlifting, 4-day, peaking"

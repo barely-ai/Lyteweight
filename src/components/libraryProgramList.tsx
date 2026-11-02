@@ -1,7 +1,7 @@
 import { JSX, useState } from "react";
 import { Pressable, View } from "react-native";
 import { Text } from "./primitives/text";
-import { TextInput } from "./primitives/textInput";
+import { LibraryTextInput } from "./libraryTextInput";
 import { ILibraryProgramSummary } from "../models/libraryTypes";
 import { ProgramLibrary_filter, ProgramLibrary_starsLabel } from "../models/programLibrary";
 
@@ -16,8 +16,8 @@ export function LibraryProgramList(props: IProps): JSX.Element {
   const shown = ProgramLibrary_filter(props.programs, query);
   return (
     <View>
-      <TextInput
-        className="px-3 py-2 mb-3 border rounded-lg border-border-neutral bg-background-default"
+      <LibraryTextInput
+        className="mb-3"
         placeholder="Search name, author or tag"
         value={query}
         onChangeText={setQuery}

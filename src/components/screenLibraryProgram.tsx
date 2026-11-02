@@ -1,7 +1,7 @@
 import { JSX, useState } from "react";
 import { Pressable, View } from "react-native";
 import { Text } from "./primitives/text";
-import { TextInput } from "./primitives/textInput";
+import { LibraryTextInput } from "./libraryTextInput";
 import { Button } from "./button";
 import { LinkButton } from "./linkButton";
 import { LibraryComments } from "./libraryComments";
@@ -137,8 +137,8 @@ export function ScreenLibraryProgram(props: IProps): JSX.Element {
       {library?.coachKey && (
         <View className="p-3 mt-4 border rounded-xl border-border-cardyellow">
           <Text className="mb-2 text-sm font-bold">Recommend as a coach</Text>
-          <TextInput
-            className="px-3 py-2 mb-2 border rounded-lg border-border-neutral bg-background-default"
+          <LibraryTextInput
+            className="mb-2"
             placeholder="Why you recommend it (280 characters)"
             value={note}
             onChangeText={setNote}

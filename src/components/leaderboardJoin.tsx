@@ -1,7 +1,7 @@
 import { JSX, useState } from "react";
 import { View } from "react-native";
 import { Text } from "./primitives/text";
-import { TextInput } from "./primitives/textInput";
+import { LibraryTextInput } from "./libraryTextInput";
 import { Button } from "./button";
 import { LibraryChips } from "./libraryChips";
 import { ILibrarySex } from "../models/libraryTypes";
@@ -24,8 +24,8 @@ export function LeaderboardJoin(props: IProps): JSX.Element {
         kilograms you lifted, and your cardio. Others see your display name and weight class, never your exact
         bodyweight.
       </Text>
-      <TextInput
-        className="px-3 py-2 mb-3 border rounded-lg border-border-neutral bg-background-default"
+      <LibraryTextInput
+        className="mb-3"
         placeholder="Display name"
         value={name}
         onChangeText={setName}

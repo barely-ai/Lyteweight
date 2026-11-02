@@ -1,7 +1,7 @@
 import { JSX, useState } from "react";
 import { Pressable, View } from "react-native";
 import { Text } from "./primitives/text";
-import { TextInput } from "./primitives/textInput";
+import { LibraryTextInput } from "./libraryTextInput";
 import { Button } from "./button";
 import { ILibraryComment } from "../models/libraryTypes";
 
@@ -24,16 +24,16 @@ export function LibraryComments(props: IProps): JSX.Element {
       <Text className="mb-2 text-base font-bold">Comments</Text>
       {props.canComment ? (
         <View className="p-3 mb-3 border rounded-xl border-border-neutral">
-          <TextInput
-            className="px-3 py-2 mb-2 border rounded-lg border-border-neutral bg-background-default"
+          <LibraryTextInput
+            className="mb-2"
             placeholder="Your display name"
             value={name}
             onChangeText={setName}
             maxLength={30}
             testID="library-comment-name"
           />
-          <TextInput
-            className="px-3 py-2 mb-2 border rounded-lg border-border-neutral bg-background-default"
+          <LibraryTextInput
+            className="mb-2"
             placeholder="How did this program go for you?"
             value={body}
             onChangeText={setBody}
