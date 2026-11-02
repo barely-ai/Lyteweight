@@ -17,6 +17,7 @@ import { WorkoutExerciseUtils_getBgColor100, WorkoutExerciseUtils_getIconColor }
 import { DateUtils_formatDayMonth } from "../utils/date";
 import { ActionMenu, IActionMenuAction } from "./actionMenu";
 import type { IWorkoutExerciseSetBodyProps } from "./workoutExerciseSet";
+import { IUnit } from "../types";
 import {
   RpeWeightHint,
   WorkoutExerciseLastSet,
@@ -27,6 +28,7 @@ import {
 
 const COMPLETE_ICON_SIZE = 48;
 const UNILATERAL_WEIGHT_FLEX = 1.4;
+const setWeightUnits: IUnit[] = ["kg", "lb"];
 
 export function WorkoutExerciseSetExpanded(props: IWorkoutExerciseSetBodyProps): JSX.Element {
   const { set, isUnilateral, columnWidths, onEditTarget, onLongPressSet, onDeleteSet } = props;
@@ -192,6 +194,7 @@ export function WorkoutExerciseSetExpanded(props: IWorkoutExerciseSetBodyProps):
                 tabStop={true}
                 name="set-weight"
                 showUnitInCorner={true}
+                units={setWeightUnits}
                 exerciseType={props.exerciseType}
                 inputCommitMode="blur"
                 onBlur={props.onBlurWeight}

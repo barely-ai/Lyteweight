@@ -16,6 +16,9 @@ import {
   WorkoutExerciseSetTargetField,
   WorkoutExerciseSet_dataCy,
 } from "./workoutExerciseSetFields";
+import { IUnit } from "../types";
+
+const setWeightUnits: IUnit[] = ["kg", "lb"];
 
 export function WorkoutExerciseSetCompact(props: IWorkoutExerciseSetBodyProps): JSX.Element {
   const { set, isUnilateral, labelW, columnWidths } = props;
@@ -119,6 +122,7 @@ export function WorkoutExerciseSetCompact(props: IWorkoutExerciseSetBodyProps): 
             tabIndex={tabIndex}
             tabStop={true}
             name="set-weight"
+            units={setWeightUnits}
             exerciseType={props.exerciseType}
             inputCommitMode="blur"
             onBlur={props.onBlurWeight}
