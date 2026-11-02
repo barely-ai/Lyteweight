@@ -18,6 +18,8 @@ import { DateUtils_formatDayMonth } from "../utils/date";
 import { ActionMenu, IActionMenuAction } from "./actionMenu";
 import type { IWorkoutExerciseSetBodyProps } from "./workoutExerciseSet";
 import { IUnit } from "../types";
+import { SetTag_badge, SetTag_isTag, SetTag_options } from "../models/setTag";
+import { Select } from "./primitives/select";
 import {
   RpeWeightHint,
   WorkoutExerciseLastSet,
@@ -29,9 +31,13 @@ import {
 const COMPLETE_ICON_SIZE = 48;
 const UNILATERAL_WEIGHT_FLEX = 1.4;
 const setWeightUnits: IUnit[] = ["kg", "lb"];
+const setTagSelectOptions = [
+  { value: "", label: "None" },
+  ...SetTag_options().map((o) => ({ value: o.tag, label: o.label })),
+];
 
 export function WorkoutExerciseSetExpanded(props: IWorkoutExerciseSetBodyProps): JSX.Element {
-  const { set, isUnilateral, columnWidths, onEditTarget, onLongPressSet, onDeleteSet } = props;
+  const { set, isUnilateral, columnWidths, onEditTarget, onLongPressSet, onDeleteSet, onSetTag } = props;
   const onTargetPress = props.isRoundedWeight ? props.onOpenRoundingInfo : props.onToggleExpand;
   const actions = useMemo<IActionMenuAction[]>(() => {
     const list: IActionMenuAction[] = [];
@@ -79,11 +85,9 @@ export function WorkoutExerciseSetExpanded(props: IWorkoutExerciseSetBodyProps):
                 backgroundColor: props.isNext ? Tailwind_semantic().button.primarybackground : "transparent",
               }}
             >
-              {props.type === "warmup" ? (
-                <Text className={`text-xs ${props.isNext ? "text-text-alwayswhite font-bold" : ""}`}>W</Text>
-              ) : (
-                <Text className={props.isNext ? "text-text-alwayswhite font-bold" : ""}>{props.setIndex + 1}</Text>
-              )}
+              <Text className={props.isNext ? "text-text-alwayswhite font-bold" : ""}>
+                {SetTag_badge(set.tag, props.type === "warmup", props.setIndex)}
+              </Text>
             </View>
           </Pressable>
           <View className="flex-1" style={menuZIndex}>
@@ -302,6 +306,16 @@ export function WorkoutExerciseSetExpanded(props: IWorkoutExerciseSetBodyProps):
                 ))}
               </Pressable>
             )}
+
+            <View className="flex-row items-center gap-2 pr-4 mt-2" testID="set-tag">
+              <Text className="text-xs text-text-secondary">Set type</Text>
+              <Select
+                value={set.tag ?? ""}
+                options={setTagSelectOptions}
+                onChange={(value) => onSetTag(SetTag_isTag(value) ? value : undefined)}
+                className="text-xs"
+              />
+            </View>
           </View>
         </View>
       </View>

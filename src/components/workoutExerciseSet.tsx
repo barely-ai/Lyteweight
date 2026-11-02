@@ -20,6 +20,7 @@ import {
   IWeight,
   IPercentage,
 } from "../types";
+import { ISetTag } from "../models/setTag";
 import { n } from "../utils/math";
 import { updateProgress } from "../models/state";
 import { LensBuilder, lb } from "lens-shmens";
@@ -152,6 +153,7 @@ export interface IWorkoutExerciseSetBodyProps {
   onEditTarget?: () => void;
   onLongPressSet?: () => void;
   onDeleteSet: () => void;
+  onSetTag: (tag: ISetTag | undefined) => void;
   onMenuOpenChange?: (isOpen: boolean) => void;
   platesLine?: IEquipmentLoadPicture;
   onOpenSubscription: () => void;
@@ -348,6 +350,13 @@ function WorkoutExerciseSetInner(props: IWorkoutExerciseSet): JSX.Element {
       "delete-set"
     );
   }, [trackClick, dispatch, lbSets, setIndex]);
+  const onSetTag = useCallback(
+    (tag: ISetTag | undefined) => {
+      trackClick("workout-set-tag");
+      updateProgress(dispatch, [lbSet.recordModify((s) => ({ ...s, tag }))], "set-tag");
+    },
+    [trackClick, dispatch, lbSet]
+  );
   const isRoundedWeight =
     props.type !== "warmup" &&
     props.settings.workoutSettings.targetType === "target" &&
@@ -391,6 +400,7 @@ function WorkoutExerciseSetInner(props: IWorkoutExerciseSet): JSX.Element {
     onEditTarget: hasEdit ? onEditTarget : undefined,
     onLongPressSet: hasEdit ? onLongPressSet : undefined,
     onDeleteSet,
+    onSetTag,
     onMenuOpenChange: props.onMenuOpenChange,
     platesLine,
     onOpenSubscription,

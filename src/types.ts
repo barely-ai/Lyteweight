@@ -2,6 +2,7 @@
 import * as v from "valibot";
 import { IVersions, IVersionTypes } from "./models/versionTracker/types";
 import { IEquals } from "./utils/types";
+import type { ISetTag } from "./models/setTag";
 
 export const equipments = [
   "barbell",
@@ -491,6 +492,7 @@ export interface ISet {
   completedSetTimer?: number;
   completedSetTimerLeft?: number;
   programSetIndex?: number;
+  tag?: ISetTag;
 }
 const _VSet = v.object({
   vtype: v.literal("set"),
@@ -519,6 +521,9 @@ const _VSet = v.object({
   completedSetTimer: v.optional(v.number()),
   completedSetTimerLeft: v.optional(v.number()),
   programSetIndex: v.optional(v.number()),
+  tag: v.optional(
+    v.picklist(["amrap", "backoff", "drop", "failed", "partial", "superset", "top", "warmup", "working"])
+  ),
 });
 const _VSetMatches: IEquals<v.InferOutput<typeof _VSet>, ISet> = true;
 void _VSetMatches;

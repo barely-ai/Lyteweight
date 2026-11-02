@@ -17,6 +17,7 @@ import {
   WorkoutExerciseSet_dataCy,
 } from "./workoutExerciseSetFields";
 import { IUnit } from "../types";
+import { SetTag_badge } from "../models/setTag";
 
 const setWeightUnits: IUnit[] = ["kg", "lb"];
 
@@ -48,11 +49,9 @@ export function WorkoutExerciseSetCompact(props: IWorkoutExerciseSetBodyProps): 
                 backgroundColor: props.isNext ? Tailwind_semantic().button.primarybackground : "transparent",
               }}
             >
-              {props.type === "warmup" ? (
-                <Text className={`text-xs ${props.isNext ? "text-text-alwayswhite font-bold" : ""}`}>W</Text>
-              ) : (
-                <Text className={props.isNext ? "text-text-alwayswhite font-bold" : ""}>{props.setIndex + 1}</Text>
-              )}
+              <Text className={props.isNext ? "text-text-alwayswhite font-bold" : ""}>
+                {SetTag_badge(set.tag, props.type === "warmup", props.setIndex)}
+              </Text>
             </View>
           </View>
           <View className="flex-1" data-testid="workout-set-target" testID="workout-set-target">
